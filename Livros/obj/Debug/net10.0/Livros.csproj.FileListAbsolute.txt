@@ -239,3 +239,7 @@ C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\refint\Livros.dll
 C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\Livros.pdb
 C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\Livros.genruntimeconfig.cache
 C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\ref\Livros.dll
+C:\Users\joao.mdias\Livros\Livros\bin\Debug\net10.0\Livros.staticwebassets.runtime.json
+C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\Livros.sourcelink.json
+C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\compressed\p1b0gzmjpb-{0}-qbl0sgjnvm-qbl0sgjnvm.gz
+C:\Users\joao.mdias\Livros\Livros\obj\Debug\net10.0\compressed\6ol5s6m2mt-{0}-9lioys8vi4-9lioys8vi4.gz

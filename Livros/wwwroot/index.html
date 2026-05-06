@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel da Biblioteca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+    <h1 class="mb-4">Painel da Biblioteca</h1>
+
+    <div class="card p-4 mb-4 bg-light">
+        <h4>Cadastrar Novo Livro</h4>
+        <div class="mb-3">
+            <label>Token JWT:</label>
+            <input type="text" id="inputToken" class="form-control" placeholder="eyJhbGciOi...">
+        </div>
+        <button class="btn btn-success" onclick="cadastrarLivro()">Cadastrar Livro</button>
+    </div>
+
+    <button class="btn btn-primary mb-3" onclick="carregarLivros()">Atualizar Lista de Livros</button>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaCorpo">
+        </tbody>
+    </table>
+
+    <script src="app.js"></script>
+</body>
+</html>

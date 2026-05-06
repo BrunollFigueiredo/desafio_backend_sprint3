@@ -1,0 +1,4 @@
+wwwroot\app.js
+wwwroot\index.html
+C:\Users\joao.mdias\Livros\Livros\wwwroot\app.js
+C:\Users\joao.mdias\Livros\Livros\wwwroot\index.html
