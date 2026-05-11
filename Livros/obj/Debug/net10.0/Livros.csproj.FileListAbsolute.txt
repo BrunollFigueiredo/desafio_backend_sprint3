@@ -350,7 +350,6 @@ C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\rjsmrazor.dswa.c
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\scopedcss\bundle\Livros.styles.css
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\compressed\p1b0gzmjpb-{0}-qbl0sgjnvm-qbl0sgjnvm.gz
-C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\compressed\6ol5s6m2mt-{0}-7nsgb1kucq-7nsgb1kucq.gz
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\staticwebassets.development.json
@@ -379,3 +378,4 @@ C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\bin\Debug\net10.0\ru\Microsoft.Cod
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\obj\Debug\net10.0\compressed\6ol5s6m2mt-{0}-v27tgfdsy3-v27tgfdsy3.gz

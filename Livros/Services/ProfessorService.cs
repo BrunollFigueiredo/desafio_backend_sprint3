@@ -16,6 +16,8 @@ namespace Livros.Services
 
         public async Task Criar(ProfessorDTO dto)
         {
+            if (await _repository.ExisteComEmail(dto.Email))
+                throw new Exception("Já existe um professor cadastrado com este e-mail.");
             var professor = new Professor { Nome = dto.Nome, Email = dto.Email };
             await _repository.Adicionar(professor);
         }
@@ -24,6 +26,8 @@ namespace Livros.Services
         {
             var professor = await _repository.BuscarPorId(id)
                 ?? throw new Exception("Professor não encontrado");
+            if (await _repository.ExisteComEmail(dto.Email, ignorarId: id))
+                throw new Exception("Já existe outro professor cadastrado com este e-mail.");
             professor.Nome = dto.Nome;
             professor.Email = dto.Email;
             await _repository.Atualizar(professor);

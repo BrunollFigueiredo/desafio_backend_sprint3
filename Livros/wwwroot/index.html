@@ -1,515 +1,687 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão Acadêmica</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Acadêmica</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; }
 
-        header {
-            background: #1a56db;
-            color: white;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 { font-size: 1.3rem; font-weight: 600; }
+  /* LOGIN */
+  #pgLogin {
+    min-height: 100vh;
+    display: flex;
+    background: #1e2a4a;
+  }
+  .login-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    color: white;
+  }
+  .login-left h2 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
+  .login-left p  { font-size: 1rem; opacity: 0.7; line-height: 1.6; }
+  .login-right {
+    width: 420px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+  }
+  .login-form { width: 100%; }
+  .login-form h3 { font-size: 1.5rem; font-weight: 700; color: #1e2a4a; margin-bottom: 6px; }
+  .login-form small { color: #888; font-size: 0.82rem; display: block; margin-bottom: 28px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #444; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .field input {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid #e0e0e0; border-radius: 8px;
+    font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: #3b5bdb; }
+  .btn-entrar {
+    width: 100%; padding: 13px; background: #3b5bdb; color: white;
+    border: none; border-radius: 8px; font-size: 0.95rem;
+    font-weight: 600; cursor: pointer; margin-top: 4px;
+    transition: background 0.2s;
+  }
+  .btn-entrar:hover { background: #2f4ac5; }
+  .err-msg {
+    background: #fff0f0; color: #c0392b;
+    border-left: 3px solid #c0392b;
+    padding: 10px 14px; border-radius: 4px;
+    font-size: 0.83rem; margin-bottom: 16px; display: none;
+  }
+  .swagger-hint { text-align: center; margin-top: 22px; font-size: 0.78rem; color: #aaa; }
+  .swagger-hint a { color: #3b5bdb; text-decoration: none; }
+  @media (max-width: 640px) {
+    .login-left { display: none; }
+    .login-right { width: 100%; }
+  }
 
-        .auth-section { display: flex; gap: 8px; align-items: center; }
-        .auth-section input {
-            padding: 7px 10px;
-            border-radius: 6px;
-            border: none;
-            font-size: 0.85rem;
-            width: 120px;
-        }
-        button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: opacity 0.2s;
-        }
-        button:hover { opacity: 0.85; }
-        .btn-primary { background: #1a56db; color: white; }
-        .btn-success { background: #0e9f6e; color: white; }
-        .btn-danger  { background: #f05252; color: white; }
-        .btn-info    { background: #6366f1; color: white; }
-        .btn-white   { background: white; color: #1a56db; font-weight: 600; }
+  /* APP */
+  #pgApp { display: none; min-height: 100vh; }
+  .topbar {
+    background: #1e2a4a; color: white;
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .topbar-title { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 0.82rem; }
+  .topbar-right span { opacity: 0.8; }
+  .btn-sair {
+    padding: 6px 14px; background: transparent;
+    border: 1px solid rgba(255,255,255,0.35);
+    color: white; border-radius: 6px; cursor: pointer;
+    font-size: 0.82rem; transition: background 0.2s;
+  }
+  .btn-sair:hover { background: rgba(255,255,255,0.1); }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+  .layout { display: flex; min-height: calc(100vh - 56px); }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .tab {
-            padding: 10px 22px;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            color: #64748b;
-            font-weight: 500;
-            border: 2px solid transparent;
-            transition: border-color 0.2s, color 0.2s;
-        }
-        .tab.active { border-color: #1a56db; color: #1a56db; }
+  .sidebar {
+    width: 200px; background: white;
+    border-right: 1px solid #eee;
+    padding: 20px 0; flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 22px; cursor: pointer;
+    color: #666; font-size: 0.88rem; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { background: #f4f6fb; color: #1e2a4a; }
+  .nav-item.active { background: #eef2ff; color: #3b5bdb; border-left-color: #3b5bdb; font-weight: 600; }
+  .nav-icon { font-size: 1rem; }
+  .nav-sep { padding: 12px 22px 4px; font-size: 0.68rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: 0.08em; }
 
-        .panel { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .panel-header h2 { font-size: 1.05rem; }
+  .content { flex: 1; padding: 28px; overflow-y: auto; }
+  .section { display: none; }
+  .section.active { display: block; }
 
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            background: #f8fafc;
-            text-align: left;
-            padding: 11px 16px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #64748b;
-            letter-spacing: 0.05em;
-        }
-        td { padding: 13px 16px; border-top: 1px solid #f1f5f9; font-size: 0.9rem; }
-        tr:hover td { background: #f8fafc; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .section-header h2 { font-size: 1.15rem; font-weight: 700; color: #1e2a4a; }
 
-        .badge {
-            display: inline-block;
-            padding: 3px 9px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: #f1f5f9;
-            color: #475569;
-            margin: 2px;
-        }
-        .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+  .btn { padding: 9px 18px; border: none; border-radius: 7px; cursor: pointer; font-size: 0.83rem; font-weight: 600; transition: opacity 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.97); }
+  .btn-blue   { background: #3b5bdb; color: white; }
+  .btn-green  { background: #2f9e44; color: white; }
+  .btn-red    { background: #e03131; color: white; }
+  .btn-purple { background: #7048e8; color: white; }
+  .btn-orange { background: #e67700; color: white; }
+  .btn-gray   { background: #868e96; color: white; }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 28px;
-            width: 420px;
-            max-width: 92vw;
-        }
-        .modal h3 { margin-bottom: 18px; font-size: 1.05rem; }
-        .form-group { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 5px; font-size: 0.83rem; font-weight: 500; color: #374151; }
-        select, input[type="number"], input[type="text"], input[type="email"] {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        select:focus, input:focus { border-color: #1a56db; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  .card { background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f8f9fa; padding: 11px 16px; text-align: left; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.06em; }
+  tbody td { padding: 13px 16px; font-size: 0.87rem; color: #333; border-top: 1px solid #f1f3f5; vertical-align: middle; }
+  tbody tr:hover td { background: #fafbfc; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-        #toastContainer { position: fixed; top: 20px; right: 20px; z-index: 200; }
-        .toast {
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-            animation: slideIn 0.3s ease;
-            max-width: 320px;
-        }
-        .toast-success { background: #0e9f6e; color: white; }
-        .toast-error   { background: #f05252; color: white; }
-        @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .tag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; margin: 2px; }
+  .tag-default  { background: #f1f3f5; color: #555; }
+  .tag-green    { background: #d3f9d8; color: #1a5c2a; }
+  .tag-red      { background: #ffe3e3; color: #8c1a1a; }
+  .tag-blue     { background: #dbe4ff; color: #1c3a9e; }
+  .tag-gray     { background: #f1f3f5; color: #999; }
 
-        .login-status { font-size: 0.85rem; color: rgba(255,255,255,0.9); }
-        .empty-row { text-align: center; color: #94a3b8; padding: 36px !important; }
-    </style>
+  /* MODAIS */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .overlay.aberto { display: flex; }
+  .modal { background: white; border-radius: 12px; padding: 28px; width: 420px; max-width: 96vw; max-height: 90vh; overflow-y: auto; }
+  .modal-titulo { font-size: 1rem; font-weight: 700; color: #1e2a4a; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #f1f3f5; }
+  .campo { margin-bottom: 16px; }
+  .campo label { display: block; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #555; margin-bottom: 6px; }
+  .campo input, .campo select {
+    width: 100%; padding: 10px 13px;
+    border: 1.5px solid #dee2e6; border-radius: 7px;
+    font-size: 0.9rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .campo input:focus, .campo select:focus { border-color: #3b5bdb; }
+  .modal-acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+  /* media modal */
+  .media-box { text-align: center; padding: 24px 16px; }
+  .media-nome { font-size: 0.9rem; color: #888; margin-bottom: 16px; }
+  .media-num { font-size: 3rem; font-weight: 800; margin-bottom: 8px; }
+  .media-situacao { display: inline-block; padding: 6px 22px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; }
+
+  /* toasts */
+  #toasts { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    padding: 12px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    animation: up 0.3s ease; max-width: 300px;
+  }
+  .toast-ok  { background: #2f9e44; color: white; }
+  .toast-err { background: #e03131; color: white; }
+  @keyframes up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .empty { text-align: center; padding: 48px; color: #bbb; font-size: 0.9rem; }
+</style>
 </head>
 <body>
 
-<header>
-    <h1>Sistema de Gestão Acadêmica</h1>
-    <div class="auth-section" id="authSection">
-        <input type="text"     id="inputUsuario" placeholder="Usuário" value="admin" />
-        <input type="password" id="inputSenha"   placeholder="Senha"   value="123456" />
-        <button class="btn-white" onclick="login()">Entrar</button>
+<!-- LOGIN -->
+<div id="pgLogin">
+  <div class="login-left">
+    <h2>Sistema de Gestão Acadêmica</h2>
+    <p>Gerencie alunos, professores e disciplinas.<br>Calcule médias e acompanhe resultados.</p>
+  </div>
+  <div class="login-right">
+    <div class="login-form">
+      <h3>Entrar</h3>
+      <small>Acesse com suas credenciais</small>
+      <div class="err-msg" id="errLogin"></div>
+      <div class="field">
+        <label>Usuário</label>
+        <input id="iUsuario" type="text" value="admin" />
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input id="iSenha" type="password" value="123456" onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <button class="btn-entrar" onclick="login()">Entrar</button>
+      <div class="swagger-hint">API docs: <a href="/swagger" target="_blank">Swagger</a></div>
     </div>
-</header>
+  </div>
+</div>
 
-<div id="toastContainer"></div>
-
-<div class="container">
-    <div class="tabs">
-        <div class="tab active" onclick="showTab('alunos')">Alunos</div>
-        <div class="tab"        onclick="showTab('professores')">Professores</div>
-        <div class="tab"        onclick="showTab('disciplinas')">Disciplinas</div>
+<!-- APP -->
+<div id="pgApp">
+  <div class="topbar">
+    <div class="topbar-title">🎓 Gestão Acadêmica</div>
+    <div class="topbar-right">
+      <span id="nomeUsuario"></span>
+      <button class="btn-sair" onclick="sair()">Sair</button>
     </div>
+  </div>
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="nav-sep">Menu</div>
+      <div class="nav-item active" onclick="irPara('alunos',this)"><span class="nav-icon">👩‍🎓</span> Alunos</div>
+      <div class="nav-item" onclick="irPara('professores',this)"><span class="nav-icon">👨‍🏫</span> Professores</div>
+      <div class="nav-item" onclick="irPara('disciplinas',this)"><span class="nav-icon">📚</span> Disciplinas</div>
+    </nav>
+    <main class="content">
 
-    <!-- ALUNOS -->
-    <div id="tab-alunos" class="panel">
-        <div class="panel-header">
-            <h2>Lista de Alunos</h2>
-            <button class="btn-primary" onclick="abrirModalAluno()">+ Novo Aluno</button>
+      <!-- ALUNOS -->
+      <div id="sec-alunos" class="section active">
+        <div class="section-header">
+          <h2>Alunos</h2>
+          <button class="btn btn-blue" onclick="abrirAluno()">+ Novo aluno</button>
         </div>
-        <table>
-            <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Notas</th><th>Ações</th></tr></thead>
-            <tbody id="tabelaAlunos"><tr><td colspan="5" class="empty-row">Carregando...</td></tr></tbody>
-        </table>
-    </div>
-
-    <!-- PROFESSORES -->
-    <div id="tab-professores" class="panel" style="display:none">
-        <div class="panel-header">
-            <h2>Lista de Professores</h2>
-            <button class="btn-primary" onclick="abrirModalProfessor()">+ Novo Professor</button>
+        <div class="card">
+          <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Notas</th><th>Situação</th><th>Ações</th></tr></thead>
+            <tbody id="tbAlunos"><tr><td colspan="6" class="empty">Carregando...</td></tr></tbody>
+          </table>
         </div>
-        <table>
+      </div>
+
+      <!-- PROFESSORES -->
+      <div id="sec-professores" class="section">
+        <div class="section-header">
+          <h2>Professores</h2>
+          <button class="btn btn-blue" onclick="abrirProfessor()">+ Novo professor</button>
+        </div>
+        <div class="card">
+          <table>
             <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Turmas</th><th>Ações</th></tr></thead>
-            <tbody id="tabelaProfessores"><tr><td colspan="5" class="empty-row">Carregando...</td></tr></tbody>
-        </table>
-    </div>
-
-    <!-- DISCIPLINAS -->
-    <div id="tab-disciplinas" class="panel" style="display:none">
-        <div class="panel-header">
-            <h2>Lista de Disciplinas</h2>
-            <button class="btn-primary" onclick="abrirModalDisciplina()">+ Nova Disciplina</button>
+            <tbody id="tbProfessores"><tr><td colspan="5" class="empty">Carregando...</td></tr></tbody>
+          </table>
         </div>
-        <table>
+      </div>
+
+      <!-- DISCIPLINAS -->
+      <div id="sec-disciplinas" class="section">
+        <div class="section-header">
+          <h2>Disciplinas</h2>
+          <button class="btn btn-blue" onclick="abrirDisciplina()">+ Nova disciplina</button>
+        </div>
+        <div class="card">
+          <table>
             <thead><tr><th>#</th><th>Nome</th><th>Carga Horária</th><th>Ações</th></tr></thead>
-            <tbody id="tabelaDisciplinas"><tr><td colspan="4" class="empty-row">Carregando...</td></tr></tbody>
-        </table>
-    </div>
+            <tbody id="tbDisciplinas"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
 </div>
 
-<!-- MODAL: Lançar Nota -->
-<div class="modal-overlay" id="modalNota">
-    <div class="modal">
-        <h3>Lançar Nota</h3>
-        <p id="modalNotaAlunoNome" style="color:#64748b; margin-bottom:16px; font-size:0.9rem"></p>
-        <input type="hidden" id="notaAlunoId" />
-        <div class="form-group">
-            <label>Disciplina</label>
-            <select id="notaDisciplinaId"></select>
-        </div>
-        <div class="form-group">
-            <label>Nota (0 – 10)</label>
-            <input type="number" id="notaValor" min="0" max="10" step="0.1" placeholder="Ex: 8.5" />
-        </div>
-        <div class="modal-actions">
-            <button class="btn-danger"  onclick="fecharModal('modalNota')">Cancelar</button>
-            <button class="btn-success" onclick="lancarNota()">Lançar Nota</button>
-        </div>
+<div id="toasts"></div>
+
+<!-- MODAL ALUNO -->
+<div class="overlay" id="mAluno">
+  <div class="modal">
+    <div class="modal-titulo" id="mAlunoTitulo">Novo aluno</div>
+    <input type="hidden" id="mAlunoId" />
+    <div class="campo"><label>Nome</label><input id="mAlunoNome" type="text" placeholder="Nome completo" /></div>
+    <div class="campo"><label>Email</label><input id="mAlunoEmail" type="email" placeholder="email@exemplo.com" /></div>
+    <div class="modal-acoes">
+      <button class="btn btn-gray" onclick="fechar('mAluno')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarAluno()">Salvar</button>
     </div>
+  </div>
 </div>
 
-<!-- MODAL: Aluno -->
-<div class="modal-overlay" id="modalAluno">
-    <div class="modal">
-        <h3 id="modalAlunoTitle">Novo Aluno</h3>
-        <input type="hidden" id="alunoId" />
-        <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="alunoNome" placeholder="Nome completo" />
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="alunoEmail" placeholder="email@exemplo.com" />
-        </div>
-        <div class="modal-actions">
-            <button class="btn-danger"  onclick="fecharModal('modalAluno')">Cancelar</button>
-            <button class="btn-success" onclick="salvarAluno()">Salvar</button>
-        </div>
+<!-- MODAL PROFESSOR -->
+<div class="overlay" id="mProfessor">
+  <div class="modal">
+    <div class="modal-titulo" id="mProfessorTitulo">Novo professor</div>
+    <input type="hidden" id="mProfessorId" />
+    <div class="campo"><label>Nome</label><input id="mProfessorNome" type="text" placeholder="Nome completo" /></div>
+    <div class="campo"><label>Email</label><input id="mProfessorEmail" type="email" placeholder="email@exemplo.com" /></div>
+    <div class="modal-acoes">
+      <button class="btn btn-gray" onclick="fechar('mProfessor')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarProfessor()">Salvar</button>
     </div>
+  </div>
 </div>
 
-<!-- MODAL: Professor -->
-<div class="modal-overlay" id="modalProfessor">
-    <div class="modal">
-        <h3 id="modalProfessorTitle">Novo Professor</h3>
-        <input type="hidden" id="professorId" />
-        <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="professorNome" placeholder="Nome completo" />
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="professorEmail" placeholder="email@exemplo.com" />
-        </div>
-        <div class="modal-actions">
-            <button class="btn-danger"  onclick="fecharModal('modalProfessor')">Cancelar</button>
-            <button class="btn-success" onclick="salvarProfessor()">Salvar</button>
-        </div>
+<!-- MODAL DISCIPLINA -->
+<div class="overlay" id="mDisciplina">
+  <div class="modal">
+    <div class="modal-titulo" id="mDisciplinaTitulo">Nova disciplina</div>
+    <input type="hidden" id="mDisciplinaId" />
+    <div class="campo"><label>Nome</label><input id="mDisciplinaNome" type="text" placeholder="Ex: Matemática" /></div>
+    <div class="campo"><label>Carga horária (horas)</label><input id="mDisciplinaCH" type="number" min="1" max="400" placeholder="Ex: 60" /></div>
+    <div class="modal-acoes">
+      <button class="btn btn-gray" onclick="fechar('mDisciplina')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarDisciplina()">Salvar</button>
     </div>
+  </div>
 </div>
 
-<!-- MODAL: Disciplina -->
-<div class="modal-overlay" id="modalDisciplina">
-    <div class="modal">
-        <h3 id="modalDisciplinaTitle">Nova Disciplina</h3>
-        <input type="hidden" id="disciplinaId" />
-        <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="disciplinaNome" placeholder="Ex: Matemática" />
-        </div>
-        <div class="form-group">
-            <label>Carga Horária (horas)</label>
-            <input type="number" id="disciplinaCargaHoraria" min="1" max="400" placeholder="Ex: 60" />
-        </div>
-        <div class="modal-actions">
-            <button class="btn-danger"  onclick="fecharModal('modalDisciplina')">Cancelar</button>
-            <button class="btn-success" onclick="salvarDisciplina()">Salvar</button>
-        </div>
+<!-- MODAL NOTA -->
+<div class="overlay" id="mNota">
+  <div class="modal">
+    <div class="modal-titulo">Lançar nota</div>
+    <input type="hidden" id="mNotaAlunoId" />
+    <p id="mNotaAlunoNome" style="color:#888; font-size:0.88rem; margin-bottom:16px"></p>
+    <div class="campo">
+      <label>Disciplina</label>
+      <select id="mNotaDisciplina"></select>
     </div>
+    <div class="campo">
+      <label>Nota (0 – 10)</label>
+      <input id="mNotaValor" type="number" min="0" max="10" step="0.1" placeholder="Ex: 7.5" />
+    </div>
+    <div class="modal-acoes">
+      <button class="btn btn-gray" onclick="fechar('mNota')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarNota()">Lançar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MÉDIA -->
+<div class="overlay" id="mMedia">
+  <div class="modal" style="text-align:center">
+    <div class="modal-titulo" style="text-align:left">Resultado do aluno</div>
+    <div class="media-box" id="mediaBox"></div>
+    <div class="modal-acoes">
+      <button class="btn btn-gray" onclick="fechar('mMedia')">Fechar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    let token = localStorage.getItem('jwtToken');
+let token = localStorage.getItem('jwt');
+let usuario = localStorage.getItem('usuario');
 
-    function toast(msg, tipo = 'success') {
-        const el = document.createElement('div');
-        el.className = `toast toast-${tipo}`;
-        el.textContent = msg;
-        document.getElementById('toastContainer').appendChild(el);
-        setTimeout(() => el.remove(), 3500);
+if (token) abrirApp();
+
+// fechar modal ao clicar fora
+document.querySelectorAll('.overlay').forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('aberto'); })
+);
+
+function fechar(id) { document.getElementById(id).classList.remove('aberto'); }
+function abrir(id)  { document.getElementById(id).classList.add('aberto'); }
+
+function toast(msg, ok = true) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (ok ? 'toast-ok' : 'toast-err');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+function hdr() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+}
+
+async function api(url, opts = {}) {
+  const res = await fetch(url, opts);
+  let body;
+  try { body = await res.json(); } catch { body = null; }
+  return { ok: res.ok, status: res.status, body };
+}
+
+// ── LOGIN ──
+async function login() {
+  const errEl = document.getElementById('errLogin');
+  errEl.style.display = 'none';
+  try {
+    const r = await api('/api/Auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        usuario: document.getElementById('iUsuario').value.trim(),
+        senha: document.getElementById('iSenha').value
+      })
+    });
+    if (!r.ok) throw new Error(r.body?.erro || r.body?.mensagem || 'Usuário ou senha inválidos.');
+    token = r.body.token;
+    usuario = document.getElementById('iUsuario').value.trim();
+    localStorage.setItem('jwt', token);
+    localStorage.setItem('usuario', usuario);
+    abrirApp();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function abrirApp() {
+  document.getElementById('pgLogin').style.display = 'none';
+  document.getElementById('pgApp').style.display = 'block';
+  document.getElementById('nomeUsuario').textContent = usuario || 'admin';
+  carregarAlunos();
+  carregarProfessores();
+  carregarDisciplinas();
+}
+
+function sair() {
+  localStorage.removeItem('jwt');
+  localStorage.removeItem('usuario');
+  token = null; usuario = null;
+  document.getElementById('pgLogin').style.display = 'flex';
+  document.getElementById('pgApp').style.display = 'none';
+}
+
+function irPara(sec, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + sec).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── ALUNOS ──
+async function carregarAlunos() {
+  try {
+    const r = await api('/api/Alunos');
+    const tb = document.getElementById('tbAlunos');
+    if (!r.ok) {
+      tb.innerHTML = '<tr><td colspan="6" class="empty">Erro ao carregar — verifique se a API está rodando</td></tr>';
+      return;
     }
-
-    function authHeaders() {
-        return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+    if (!r.body?.length) {
+      tb.innerHTML = '<tr><td colspan="6" class="empty">Nenhum aluno cadastrado ainda</td></tr>';
+      return;
     }
+    tb.innerHTML = r.body.map(a => {
+      const notas = a.notas?.length
+        ? a.notas.map(n => `<span class="tag tag-blue">${n.disciplina?.nome ?? '?'}: ${n.valor}</span>`).join('')
+        : '<span class="tag tag-gray">—</span>';
+      let sit = '<span class="tag tag-gray">Sem notas</span>';
+      if (a.notas?.length) {
+        const m = a.notas.reduce((s,n) => s+n.valor,0) / a.notas.length;
+        sit = m >= 7
+          ? `<span class="tag tag-green">Aprovado (${m.toFixed(1)})</span>`
+          : `<span class="tag tag-red">Reprovado (${m.toFixed(1)})</span>`;
+      }
+      const nm = a.nome.replace(/'/g,"\\'");
+      const em = a.email.replace(/'/g,"\\'");
+      return `<tr>
+        <td style="color:#aaa">${a.id}</td>
+        <td><strong>${a.nome}</strong></td>
+        <td style="color:#666">${a.email}</td>
+        <td>${notas}</td>
+        <td>${sit}</td>
+        <td><div class="actions">
+          <button class="btn btn-purple" onclick="verMedia(${a.id})">Média</button>
+          <button class="btn btn-green"  onclick="abrirNota(${a.id},'${nm}')">Nota</button>
+          <button class="btn btn-orange" onclick="editarAluno(${a.id},'${nm}','${em}')">Editar</button>
+          <button class="btn btn-red"    onclick="deletarAluno(${a.id})">Excluir</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('tbAlunos').innerHTML = '<tr><td colspan="6" class="empty">Erro ao carregar — verifique se a API está rodando</td></tr>';
+  }
+}
 
-    function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+function abrirAluno() {
+  document.getElementById('mAlunoTitulo').textContent = 'Novo aluno';
+  document.getElementById('mAlunoId').value = '';
+  document.getElementById('mAlunoNome').value = '';
+  document.getElementById('mAlunoEmail').value = '';
+  abrir('mAluno');
+}
+function editarAluno(id, nome, email) {
+  document.getElementById('mAlunoTitulo').textContent = 'Editar aluno';
+  document.getElementById('mAlunoId').value = id;
+  document.getElementById('mAlunoNome').value = nome;
+  document.getElementById('mAlunoEmail').value = email;
+  abrir('mAluno');
+}
+async function salvarAluno() {
+  const id = document.getElementById('mAlunoId').value;
+  const nome = document.getElementById('mAlunoNome').value.trim();
+  const email = document.getElementById('mAlunoEmail').value.trim();
+  if (!nome || !email) { toast('Preencha todos os campos', false); return; }
+  try {
+    const r = await api(id ? `/api/Alunos/${id}` : '/api/Alunos', {
+      method: id ? 'PUT' : 'POST',
+      headers: hdr(),
+      body: JSON.stringify({ nome, email })
+    });
+    if (r.ok) { toast(r.body || 'Salvo!'); fechar('mAluno'); carregarAlunos(); }
+    else toast(r.body?.title || r.body || 'Erro ao salvar', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
+async function deletarAluno(id) {
+  if (!confirm('Remover este aluno?')) return;
+  try {
+    const r = await api(`/api/Alunos/${id}`, { method: 'DELETE', headers: hdr() });
+    if (r.ok) { toast(r.body || 'Removido!'); carregarAlunos(); }
+    else toast(r.body || 'Erro ao remover', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
 
-    function showTab(name) {
-        ['alunos', 'professores', 'disciplinas'].forEach((t, i) => {
-            document.getElementById(`tab-${t}`).style.display = t === name ? 'block' : 'none';
-            document.querySelectorAll('.tab')[i].classList.toggle('active', t === name);
-        });
+async function verMedia(id) {
+  try {
+    const r = await api(`/api/Alunos/${id}/media`);
+    if (!r.ok) { toast(r.body || 'Erro', false); return; }
+    const d = r.body;
+    const aprov = d.situacao === 'Aprovado';
+    const semNotas = d.situacao === 'Sem notas lançadas';
+    const cor    = semNotas ? '#aaa'     : (aprov ? '#2f9e44' : '#e03131');
+    const bgSit  = semNotas ? '#f1f3f5'  : (aprov ? '#d3f9d8' : '#ffe3e3');
+    const corSit = semNotas ? '#777'     : (aprov ? '#1a5c2a' : '#8c1a1a');
+    document.getElementById('mediaBox').innerHTML = `
+      <div class="media-nome">${d.aluno}</div>
+      <div class="media-num" style="color:${cor}">${semNotas ? '—' : d.media}</div>
+      <span class="media-situacao" style="background:${bgSit};color:${corSit}">${d.situacao}</span>`;
+    abrir('mMedia');
+  } catch(e) { toast('Erro ao buscar média', false); }
+}
+
+// ── NOTAS ──
+async function abrirNota(alunoId, nome) {
+  document.getElementById('mNotaAlunoId').value = alunoId;
+  document.getElementById('mNotaAlunoNome').textContent = 'Aluno: ' + nome;
+  document.getElementById('mNotaValor').value = '';
+  try {
+    const r = await api('/api/Disciplinas');
+    document.getElementById('mNotaDisciplina').innerHTML = r.ok && r.body?.length
+      ? r.body.map(d => `<option value="${d.id}">${d.nome}</option>`).join('')
+      : '<option disabled>Nenhuma disciplina cadastrada</option>';
+  } catch { document.getElementById('mNotaDisciplina').innerHTML = '<option disabled>Erro ao carregar</option>'; }
+  abrir('mNota');
+}
+async function salvarNota() {
+  const disciplinaId = parseInt(document.getElementById('mNotaDisciplina').value);
+  const valor = parseFloat(document.getElementById('mNotaValor').value);
+  if (isNaN(disciplinaId)) { toast('Nenhuma disciplina disponível', false); return; }
+  if (isNaN(valor)) { toast('Informe uma nota válida', false); return; }
+  try {
+    const r = await api('/api/Notas', {
+      method: 'POST', headers: hdr(),
+      body: JSON.stringify({
+        alunoId: parseInt(document.getElementById('mNotaAlunoId').value),
+        disciplinaId,
+        valor
+      })
+    });
+    if (r.ok) { toast(r.body || 'Nota lançada!'); fechar('mNota'); carregarAlunos(); }
+    else toast(r.body?.title || r.body || 'Erro ao lançar nota', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
+
+// ── PROFESSORES ──
+async function carregarProfessores() {
+  try {
+    const r = await api('/api/Professores');
+    const tb = document.getElementById('tbProfessores');
+    if (!r.ok) {
+      tb.innerHTML = '<tr><td colspan="5" class="empty">Erro ao carregar — verifique se a API está rodando</td></tr>';
+      return;
     }
-
-    document.querySelectorAll('.modal-overlay').forEach(el =>
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-    );
-
-    // AUTH
-    async function login() {
-        const usuario = document.getElementById('inputUsuario').value;
-        const senha   = document.getElementById('inputSenha').value;
-        try {
-            const res = await fetch('/api/Auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario, senha })
-            });
-            if (!res.ok) throw new Error('Usuário ou senha inválidos');
-            const data = await res.json();
-            token = data.token;
-            localStorage.setItem('jwtToken', token);
-            document.getElementById('authSection').innerHTML =
-                `<span class="login-status">Logado como <strong>${usuario}</strong></span>
-                 <button class="btn-white" onclick="logout()">Sair</button>`;
-            toast('Login realizado com sucesso!');
-        } catch (e) { toast(e.message, 'error'); }
+    if (!r.body?.length) {
+      tb.innerHTML = '<tr><td colspan="5" class="empty">Nenhum professor cadastrado ainda</td></tr>';
+      return;
     }
+    tb.innerHTML = r.body.map(p => {
+      const nm = p.nome.replace(/'/g,"\\'");
+      const turmas = p.turmas?.length
+        ? p.turmas.map(t => `<span class="tag tag-blue">${t.nome}</span>`).join('')
+        : '<span class="tag tag-gray">—</span>';
+      return `<tr>
+        <td style="color:#aaa">${p.id}</td>
+        <td><strong>${p.nome}</strong></td>
+        <td style="color:#666">${p.email}</td>
+        <td>${turmas}</td>
+        <td><div class="actions">
+          <button class="btn btn-orange" onclick="editarProfessor(${p.id},'${nm}','${p.email}')">Editar</button>
+          <button class="btn btn-red"    onclick="deletarProfessor(${p.id})">Excluir</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch { document.getElementById('tbProfessores').innerHTML = '<tr><td colspan="5" class="empty">Erro ao carregar</td></tr>'; }
+}
+function abrirProfessor() {
+  document.getElementById('mProfessorTitulo').textContent = 'Novo professor';
+  document.getElementById('mProfessorId').value = '';
+  document.getElementById('mProfessorNome').value = '';
+  document.getElementById('mProfessorEmail').value = '';
+  abrir('mProfessor');
+}
+function editarProfessor(id, nome, email) {
+  document.getElementById('mProfessorTitulo').textContent = 'Editar professor';
+  document.getElementById('mProfessorId').value = id;
+  document.getElementById('mProfessorNome').value = nome;
+  document.getElementById('mProfessorEmail').value = email;
+  abrir('mProfessor');
+}
+async function salvarProfessor() {
+  const id = document.getElementById('mProfessorId').value;
+  const nome = document.getElementById('mProfessorNome').value.trim();
+  const email = document.getElementById('mProfessorEmail').value.trim();
+  if (!nome || !email) { toast('Preencha todos os campos', false); return; }
+  try {
+    const r = await api(id ? `/api/Professores/${id}` : '/api/Professores', {
+      method: id ? 'PUT' : 'POST', headers: hdr(),
+      body: JSON.stringify({ nome, email })
+    });
+    if (r.ok) { toast(r.body || 'Salvo!'); fechar('mProfessor'); carregarProfessores(); }
+    else toast(r.body?.title || r.body || 'Erro ao salvar', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
+async function deletarProfessor(id) {
+  if (!confirm('Remover este professor?')) return;
+  try {
+    const r = await api(`/api/Professores/${id}`, { method: 'DELETE', headers: hdr() });
+    if (r.ok) { toast(r.body || 'Removido!'); carregarProfessores(); }
+    else toast(r.body || 'Erro ao remover', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
 
-    function logout() { token = null; localStorage.removeItem('jwtToken'); location.reload(); }
-
-    if (token) {
-        document.getElementById('authSection').innerHTML =
-            `<span class="login-status">Sessão ativa</span>
-             <button class="btn-white" onclick="logout()">Sair</button>`;
+// ── DISCIPLINAS ──
+async function carregarDisciplinas() {
+  try {
+    const r = await api('/api/Disciplinas');
+    const tb = document.getElementById('tbDisciplinas');
+    if (!r.ok) {
+      tb.innerHTML = '<tr><td colspan="4" class="empty">Erro ao carregar — verifique se a API está rodando</td></tr>';
+      return;
     }
-
-    // ALUNOS
-    async function carregarAlunos() {
-        const alunos = await (await fetch('/api/Alunos')).json();
-        const tbody  = document.getElementById('tabelaAlunos');
-        if (!alunos.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Nenhum aluno cadastrado</td></tr>'; return; }
-        tbody.innerHTML = alunos.map(a => `
-            <tr>
-                <td>${a.id}</td>
-                <td><strong>${a.nome}</strong></td>
-                <td>${a.email}</td>
-                <td>${a.notas?.length ? a.notas.map(n => `<span class="badge">${n.disciplina?.nome ?? '?'}: ${n.valor}</span>`).join('') : '<span style="color:#94a3b8">—</span>'}</td>
-                <td><div class="actions-cell">
-                    <button class="btn-success" onclick="abrirLancarNota(${a.id},'${a.nome}')">Lançar Notas</button>
-                    <button class="btn-info"    onclick="verMedia(${a.id})">Ver Média</button>
-                    <button class="btn-primary" onclick="editarAluno(${a.id},'${a.nome}','${a.email}')">Editar</button>
-                    <button class="btn-danger"  onclick="deletarAluno(${a.id})">Excluir</button>
-                </div></td>
-            </tr>`).join('');
+    if (!r.body?.length) {
+      tb.innerHTML = '<tr><td colspan="4" class="empty">Nenhuma disciplina cadastrada ainda</td></tr>';
+      return;
     }
-
-    async function verMedia(id) {
-        const res  = await fetch(`/api/Alunos/${id}/media`);
-        const data = await res.json();
-        toast(`${data.aluno} — Média: ${data.media} — ${data.situacao}`, data.situacao === 'Aprovado' ? 'success' : 'error');
-    }
-
-    function abrirModalAluno() {
-        document.getElementById('modalAlunoTitle').textContent = 'Novo Aluno';
-        document.getElementById('alunoId').value = ''; document.getElementById('alunoNome').value = ''; document.getElementById('alunoEmail').value = '';
-        document.getElementById('modalAluno').classList.add('open');
-    }
-
-    function editarAluno(id, nome, email) {
-        document.getElementById('modalAlunoTitle').textContent = 'Editar Aluno';
-        document.getElementById('alunoId').value = id; document.getElementById('alunoNome').value = nome; document.getElementById('alunoEmail').value = email;
-        document.getElementById('modalAluno').classList.add('open');
-    }
-
-    async function salvarAluno() {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        const id = document.getElementById('alunoId').value;
-        const res = await fetch(id ? `/api/Alunos/${id}` : '/api/Alunos', {
-            method: id ? 'PUT' : 'POST', headers: authHeaders(),
-            body: JSON.stringify({ nome: document.getElementById('alunoNome').value, email: document.getElementById('alunoEmail').value })
-        });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); fecharModal('modalAluno'); carregarAlunos(); } else toast(msg, 'error');
-    }
-
-    async function deletarAluno(id) {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        if (!confirm('Deseja remover este aluno?')) return;
-        const res = await fetch(`/api/Alunos/${id}`, { method: 'DELETE', headers: authHeaders() });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); carregarAlunos(); } else toast(msg, 'error');
-    }
-
-    // LANÇAR NOTAS
-    async function abrirLancarNota(alunoId, alunoNome) {
-        document.getElementById('notaAlunoId').value = alunoId;
-        document.getElementById('modalNotaAlunoNome').textContent = `Aluno: ${alunoNome}`;
-        document.getElementById('notaValor').value = '';
-        const disciplinas = await (await fetch('/api/Disciplinas')).json();
-        document.getElementById('notaDisciplinaId').innerHTML = disciplinas.length
-            ? disciplinas.map(d => `<option value="${d.id}">${d.nome}</option>`).join('')
-            : '<option disabled>Nenhuma disciplina cadastrada</option>';
-        document.getElementById('modalNota').classList.add('open');
-    }
-
-    async function lancarNota() {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        const res = await fetch('/api/Notas', {
-            method: 'POST', headers: authHeaders(),
-            body: JSON.stringify({
-                alunoId: parseInt(document.getElementById('notaAlunoId').value),
-                disciplinaId: parseInt(document.getElementById('notaDisciplinaId').value),
-                valor: parseFloat(document.getElementById('notaValor').value)
-            })
-        });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); fecharModal('modalNota'); carregarAlunos(); } else toast(msg, 'error');
-    }
-
-    // PROFESSORES
-    async function carregarProfessores() {
-        const professores = await (await fetch('/api/Professores')).json();
-        const tbody = document.getElementById('tabelaProfessores');
-        if (!professores.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Nenhum professor cadastrado</td></tr>'; return; }
-        tbody.innerHTML = professores.map(p => `
-            <tr>
-                <td>${p.id}</td><td><strong>${p.nome}</strong></td><td>${p.email}</td>
-                <td>${p.turmas?.length ? p.turmas.map(t => `<span class="badge">${t.nome}</span>`).join('') : '<span style="color:#94a3b8">—</span>'}</td>
-                <td><div class="actions-cell">
-                    <button class="btn-primary" onclick="editarProfessor(${p.id},'${p.nome}','${p.email}')">Editar</button>
-                    <button class="btn-danger"  onclick="deletarProfessor(${p.id})">Excluir</button>
-                </div></td>
-            </tr>`).join('');
-    }
-
-    function abrirModalProfessor() {
-        document.getElementById('modalProfessorTitle').textContent = 'Novo Professor';
-        document.getElementById('professorId').value = ''; document.getElementById('professorNome').value = ''; document.getElementById('professorEmail').value = '';
-        document.getElementById('modalProfessor').classList.add('open');
-    }
-
-    function editarProfessor(id, nome, email) {
-        document.getElementById('modalProfessorTitle').textContent = 'Editar Professor';
-        document.getElementById('professorId').value = id; document.getElementById('professorNome').value = nome; document.getElementById('professorEmail').value = email;
-        document.getElementById('modalProfessor').classList.add('open');
-    }
-
-    async function salvarProfessor() {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        const id = document.getElementById('professorId').value;
-        const res = await fetch(id ? `/api/Professores/${id}` : '/api/Professores', {
-            method: id ? 'PUT' : 'POST', headers: authHeaders(),
-            body: JSON.stringify({ nome: document.getElementById('professorNome').value, email: document.getElementById('professorEmail').value })
-        });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); fecharModal('modalProfessor'); carregarProfessores(); } else toast(msg, 'error');
-    }
-
-    async function deletarProfessor(id) {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        if (!confirm('Deseja remover este professor?')) return;
-        const res = await fetch(`/api/Professores/${id}`, { method: 'DELETE', headers: authHeaders() });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); carregarProfessores(); } else toast(msg, 'error');
-    }
-
-    // DISCIPLINAS
-    async function carregarDisciplinas() {
-        const disciplinas = await (await fetch('/api/Disciplinas')).json();
-        const tbody = document.getElementById('tabelaDisciplinas');
-        if (!disciplinas.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Nenhuma disciplina cadastrada</td></tr>'; return; }
-        tbody.innerHTML = disciplinas.map(d => `
-            <tr>
-                <td>${d.id}</td><td><strong>${d.nome}</strong></td><td>${d.cargaHoraria}h</td>
-                <td><div class="actions-cell">
-                    <button class="btn-primary" onclick="editarDisciplina(${d.id},'${d.nome}',${d.cargaHoraria})">Editar</button>
-                    <button class="btn-danger"  onclick="deletarDisciplina(${d.id})">Excluir</button>
-                </div></td>
-            </tr>`).join('');
-    }
-
-    function abrirModalDisciplina() {
-        document.getElementById('modalDisciplinaTitle').textContent = 'Nova Disciplina';
-        document.getElementById('disciplinaId').value = ''; document.getElementById('disciplinaNome').value = ''; document.getElementById('disciplinaCargaHoraria').value = '';
-        document.getElementById('modalDisciplina').classList.add('open');
-    }
-
-    function editarDisciplina(id, nome, cargaHoraria) {
-        document.getElementById('modalDisciplinaTitle').textContent = 'Editar Disciplina';
-        document.getElementById('disciplinaId').value = id; document.getElementById('disciplinaNome').value = nome; document.getElementById('disciplinaCargaHoraria').value = cargaHoraria;
-        document.getElementById('modalDisciplina').classList.add('open');
-    }
-
-    async function salvarDisciplina() {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        const id = document.getElementById('disciplinaId').value;
-        const res = await fetch(id ? `/api/Disciplinas/${id}` : '/api/Disciplinas', {
-            method: id ? 'PUT' : 'POST', headers: authHeaders(),
-            body: JSON.stringify({ nome: document.getElementById('disciplinaNome').value, cargaHoraria: parseInt(document.getElementById('disciplinaCargaHoraria').value) })
-        });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); fecharModal('modalDisciplina'); carregarDisciplinas(); } else toast(msg, 'error');
-    }
-
-    async function deletarDisciplina(id) {
-        if (!token) { toast('Faça login para esta ação', 'error'); return; }
-        if (!confirm('Deseja remover esta disciplina?')) return;
-        const res = await fetch(`/api/Disciplinas/${id}`, { method: 'DELETE', headers: authHeaders() });
-        const msg = await res.json();
-        if (res.ok) { toast(msg); carregarDisciplinas(); } else toast(msg, 'error');
-    }
-
-    carregarAlunos();
-    carregarProfessores();
-    carregarDisciplinas();
+    tb.innerHTML = r.body.map(d => {
+      const nm = d.nome.replace(/'/g,"\\'");
+      return `<tr>
+        <td style="color:#aaa">${d.id}</td>
+        <td><strong>${d.nome}</strong></td>
+        <td>${d.cargaHoraria}h</td>
+        <td><div class="actions">
+          <button class="btn btn-orange" onclick="editarDisciplina(${d.id},'${nm}',${d.cargaHoraria})">Editar</button>
+          <button class="btn btn-red"    onclick="deletarDisciplina(${d.id})">Excluir</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch { document.getElementById('tbDisciplinas').innerHTML = '<tr><td colspan="4" class="empty">Erro ao carregar</td></tr>'; }
+}
+function abrirDisciplina() {
+  document.getElementById('mDisciplinaTitulo').textContent = 'Nova disciplina';
+  document.getElementById('mDisciplinaId').value = '';
+  document.getElementById('mDisciplinaNome').value = '';
+  document.getElementById('mDisciplinaCH').value = '';
+  abrir('mDisciplina');
+}
+function editarDisciplina(id, nome, ch) {
+  document.getElementById('mDisciplinaTitulo').textContent = 'Editar disciplina';
+  document.getElementById('mDisciplinaId').value = id;
+  document.getElementById('mDisciplinaNome').value = nome;
+  document.getElementById('mDisciplinaCH').value = ch;
+  abrir('mDisciplina');
+}
+async function salvarDisciplina() {
+  const id = document.getElementById('mDisciplinaId').value;
+  const nome = document.getElementById('mDisciplinaNome').value.trim();
+  const ch = parseInt(document.getElementById('mDisciplinaCH').value);
+  if (!nome || isNaN(ch)) { toast('Preencha todos os campos', false); return; }
+  try {
+    const r = await api(id ? `/api/Disciplinas/${id}` : '/api/Disciplinas', {
+      method: id ? 'PUT' : 'POST', headers: hdr(),
+      body: JSON.stringify({ nome, cargaHoraria: ch })
+    });
+    if (r.ok) { toast(r.body || 'Salvo!'); fechar('mDisciplina'); carregarDisciplinas(); }
+    else toast(r.body?.title || r.body || 'Erro ao salvar', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
+async function deletarDisciplina(id) {
+  if (!confirm('Remover esta disciplina?')) return;
+  try {
+    const r = await api(`/api/Disciplinas/${id}`, { method: 'DELETE', headers: hdr() });
+    if (r.ok) { toast(r.body || 'Removida!'); carregarDisciplinas(); }
+    else toast(r.body || 'Erro ao remover', false);
+  } catch(e) { toast('Erro de conexão com a API', false); }
+}
 </script>
 </body>
 </html>

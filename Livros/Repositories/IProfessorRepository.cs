@@ -6,6 +6,7 @@ namespace Livros.Repositories
     {
         Task<IEnumerable<Professor>> ListarTodos();
         Task<Professor?> BuscarPorId(int id);
+        Task<bool> ExisteComEmail(string email, int? ignorarId = null);
         Task Adicionar(Professor professor);
         Task Atualizar(Professor professor);
         Task Deletar(Professor professor);

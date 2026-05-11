@@ -22,6 +22,10 @@ namespace Livros.Repositories
                 .ThenInclude(t => t.Disciplina)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
+        public async Task<bool> ExisteComEmail(string email, int? ignorarId = null) =>
+            await _context.Professores
+                .AnyAsync(p => p.Email == email && p.Id != (ignorarId ?? 0));
+
         public async Task Adicionar(Professor professor)
         {
             await _context.Professores.AddAsync(professor);

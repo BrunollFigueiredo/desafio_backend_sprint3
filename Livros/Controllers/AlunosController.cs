@@ -40,8 +40,15 @@ namespace Livros.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(AlunoDTO dto)
         {
-            await _service.Criar(dto);
-            return Ok("Aluno cadastrado com sucesso");
+            try
+            {
+                await _service.Criar(dto);
+                return Ok("Aluno cadastrado com sucesso");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
@@ -55,7 +62,9 @@ namespace Livros.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return ex.Message.Contains("não encontrado")
+                    ? NotFound(ex.Message)
+                    : BadRequest(ex.Message);
             }
         }
 
