@@ -4,35 +4,33 @@ using Livros.Repositories;
 using Livros.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("ConexaoPadrao");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString,
+        new MySqlServerVersion(new Version(8, 0, 0))));
 
-builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseMySql(connectionString, 
-        ServerVersion.AutoDetect(connectionString)));
+// Repositórios
+builder.Services.AddScoped<IAlunoRepository, AlunoRepository>();
+builder.Services.AddScoped<IProfessorRepository, ProfessorRepository>();
+builder.Services.AddScoped<IDisciplinaRepository, DisciplinaRepository>();
+builder.Services.AddScoped<INotaRepository, NotaRepository>();
 
-// Registro do repositorio
-builder.Services.AddScoped<ILivroRepository, LivroRepository>();
-builder.Services.AddScoped<ILivroService, LivroService>();
+// Serviços
+builder.Services.AddScoped<IAlunoService, AlunoService>();
+builder.Services.AddScoped<IProfessorService, ProfessorService>();
+builder.Services.AddScoped<IDisciplinaService, DisciplinaService>();
+builder.Services.AddScoped<INotaService, NotaService>();
 
-// Configuração do JWT
+// JWT
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -46,7 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-// Fazer o botão de cadeado do swagger
+// Swagger com suporte a Bearer
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -75,14 +73,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -90,10 +85,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

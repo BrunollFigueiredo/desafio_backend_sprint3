@@ -16,18 +16,22 @@ namespace Livros.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.20")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Livros.Models.Categoria", b =>
+            modelBuilder.Entity("Livros.Models.Aluno", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -35,10 +39,10 @@ namespace Livros.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categorias");
+                    b.ToTable("Alunos");
                 });
 
-            modelBuilder.Entity("Livros.Models.Livro", b =>
+            modelBuilder.Entity("Livros.Models.Disciplina", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,20 +50,138 @@ namespace Livros.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AnoPublicado")
+                    b.Property<int>("CargaHoraria")
                         .HasColumnType("int");
 
-                    b.Property<string>("Autor")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Livros");
+                    b.ToTable("Disciplinas");
+                });
+
+            modelBuilder.Entity("Livros.Models.Nota", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisciplinaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlunoId");
+
+                    b.HasIndex("DisciplinaId");
+
+                    b.ToTable("Notas");
+                });
+
+            modelBuilder.Entity("Livros.Models.Professor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Professores");
+                });
+
+            modelBuilder.Entity("Livros.Models.Turma", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisciplinaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProfessorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisciplinaId");
+
+                    b.HasIndex("ProfessorId");
+
+                    b.ToTable("Turmas");
+                });
+
+            modelBuilder.Entity("Livros.Models.Nota", b =>
+                {
+                    b.HasOne("Livros.Models.Aluno", "Aluno")
+                        .WithMany("Notas")
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Livros.Models.Disciplina", "Disciplina")
+                        .WithMany()
+                        .HasForeignKey("DisciplinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("Disciplina");
+                });
+
+            modelBuilder.Entity("Livros.Models.Turma", b =>
+                {
+                    b.HasOne("Livros.Models.Disciplina", "Disciplina")
+                        .WithMany()
+                        .HasForeignKey("DisciplinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Livros.Models.Professor", "Professor")
+                        .WithMany("Turmas")
+                        .HasForeignKey("ProfessorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Disciplina");
+
+                    b.Navigation("Professor");
+                });
+
+            modelBuilder.Entity("Livros.Models.Aluno", b =>
+                {
+                    b.Navigation("Notas");
+                });
+
+            modelBuilder.Entity("Livros.Models.Professor", b =>
+                {
+                    b.Navigation("Turmas");
                 });
 #pragma warning restore 612, 618
         }

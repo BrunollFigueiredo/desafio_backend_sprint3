@@ -1,8 +1,13 @@
-﻿namespace Livros.DTOs
+using System.ComponentModel.DataAnnotations;
+
+namespace Livros.DTOs
 {
     public class LoginDTO
     {
-        public string Usuario { get; set; }
-        public string Senha { get; set; }
+        [Required(ErrorMessage = "O usuário é obrigatório")]
+        public string Usuario { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A senha é obrigatória")]
+        public string Senha { get; set; } = string.Empty;
     }
 }

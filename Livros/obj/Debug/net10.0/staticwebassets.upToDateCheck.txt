@@ -1,4 +1,4 @@
 wwwroot\app.js
 wwwroot\index.html
-C:\Users\joao.mdias\Livros\Livros\wwwroot\app.js
-C:\Users\joao.mdias\Livros\Livros\wwwroot\index.html
+C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\wwwroot\index.html
+C:\Users\bruno\SprintAPIs_Servicos_Web\Livros\wwwroot\app.js

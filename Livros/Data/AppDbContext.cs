@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
 using Livros.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Livros.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) 
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        public DbSet<Livro> Livros { get; set; }
-        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Aluno> Alunos { get; set; }
+        public DbSet<Professor> Professores { get; set; }
+        public DbSet<Disciplina> Disciplinas { get; set; }
+        public DbSet<Nota> Notas { get; set; }
+        public DbSet<Turma> Turmas { get; set; }
     }
 }

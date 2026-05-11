@@ -1,37 +1,515 @@
-﻿<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Painel da Biblioteca</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Acadêmica</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+
+        header {
+            background: #1a56db;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-size: 1.3rem; font-weight: 600; }
+
+        .auth-section { display: flex; gap: 8px; align-items: center; }
+        .auth-section input {
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.85rem;
+            width: 120px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.85; }
+        .btn-primary { background: #1a56db; color: white; }
+        .btn-success { background: #0e9f6e; color: white; }
+        .btn-danger  { background: #f05252; color: white; }
+        .btn-info    { background: #6366f1; color: white; }
+        .btn-white   { background: white; color: #1a56db; font-weight: 600; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab {
+            padding: 10px 22px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 500;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .tab.active { border-color: #1a56db; color: #1a56db; }
+
+        .panel { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .panel-header h2 { font-size: 1.05rem; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f8fafc;
+            text-align: left;
+            padding: 11px 16px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+        }
+        td { padding: 13px 16px; border-top: 1px solid #f1f5f9; font-size: 0.9rem; }
+        tr:hover td { background: #f8fafc; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #475569;
+            margin: 2px;
+        }
+        .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            width: 420px;
+            max-width: 92vw;
+        }
+        .modal h3 { margin-bottom: 18px; font-size: 1.05rem; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.83rem; font-weight: 500; color: #374151; }
+        select, input[type="number"], input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input:focus { border-color: #1a56db; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        #toastContainer { position: fixed; top: 20px; right: 20px; z-index: 200; }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            animation: slideIn 0.3s ease;
+            max-width: 320px;
+        }
+        .toast-success { background: #0e9f6e; color: white; }
+        .toast-error   { background: #f05252; color: white; }
+        @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .login-status { font-size: 0.85rem; color: rgba(255,255,255,0.9); }
+        .empty-row { text-align: center; color: #94a3b8; padding: 36px !important; }
+    </style>
 </head>
-<body class="container mt-5">
+<body>
 
-    <h1 class="mb-4">Painel da Biblioteca</h1>
+<header>
+    <h1>Sistema de Gestão Acadêmica</h1>
+    <div class="auth-section" id="authSection">
+        <input type="text"     id="inputUsuario" placeholder="Usuário" value="admin" />
+        <input type="password" id="inputSenha"   placeholder="Senha"   value="123456" />
+        <button class="btn-white" onclick="login()">Entrar</button>
+    </div>
+</header>
 
-    <div class="card p-4 mb-4 bg-light">
-        <h4>Cadastrar Novo Livro</h4>
-        <div class="mb-3">
-            <label>Token JWT:</label>
-            <input type="text" id="inputToken" class="form-control" placeholder="eyJhbGciOi...">
-        </div>
-        <button class="btn btn-success" onclick="cadastrarLivro()">Cadastrar Livro</button>
+<div id="toastContainer"></div>
+
+<div class="container">
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('alunos')">Alunos</div>
+        <div class="tab"        onclick="showTab('professores')">Professores</div>
+        <div class="tab"        onclick="showTab('disciplinas')">Disciplinas</div>
     </div>
 
-    <button class="btn btn-primary mb-3" onclick="carregarLivros()">Atualizar Lista de Livros</button>
+    <!-- ALUNOS -->
+    <div id="tab-alunos" class="panel">
+        <div class="panel-header">
+            <h2>Lista de Alunos</h2>
+            <button class="btn-primary" onclick="abrirModalAluno()">+ Novo Aluno</button>
+        </div>
+        <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Notas</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaAlunos"><tr><td colspan="5" class="empty-row">Carregando...</td></tr></tbody>
+        </table>
+    </div>
 
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
+    <!-- PROFESSORES -->
+    <div id="tab-professores" class="panel" style="display:none">
+        <div class="panel-header">
+            <h2>Lista de Professores</h2>
+            <button class="btn-primary" onclick="abrirModalProfessor()">+ Novo Professor</button>
+        </div>
+        <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Turmas</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaProfessores"><tr><td colspan="5" class="empty-row">Carregando...</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- DISCIPLINAS -->
+    <div id="tab-disciplinas" class="panel" style="display:none">
+        <div class="panel-header">
+            <h2>Lista de Disciplinas</h2>
+            <button class="btn-primary" onclick="abrirModalDisciplina()">+ Nova Disciplina</button>
+        </div>
+        <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Carga Horária</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaDisciplinas"><tr><td colspan="4" class="empty-row">Carregando...</td></tr></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL: Lançar Nota -->
+<div class="modal-overlay" id="modalNota">
+    <div class="modal">
+        <h3>Lançar Nota</h3>
+        <p id="modalNotaAlunoNome" style="color:#64748b; margin-bottom:16px; font-size:0.9rem"></p>
+        <input type="hidden" id="notaAlunoId" />
+        <div class="form-group">
+            <label>Disciplina</label>
+            <select id="notaDisciplinaId"></select>
+        </div>
+        <div class="form-group">
+            <label>Nota (0 – 10)</label>
+            <input type="number" id="notaValor" min="0" max="10" step="0.1" placeholder="Ex: 8.5" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn-danger"  onclick="fecharModal('modalNota')">Cancelar</button>
+            <button class="btn-success" onclick="lancarNota()">Lançar Nota</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Aluno -->
+<div class="modal-overlay" id="modalAluno">
+    <div class="modal">
+        <h3 id="modalAlunoTitle">Novo Aluno</h3>
+        <input type="hidden" id="alunoId" />
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="alunoNome" placeholder="Nome completo" />
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="alunoEmail" placeholder="email@exemplo.com" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn-danger"  onclick="fecharModal('modalAluno')">Cancelar</button>
+            <button class="btn-success" onclick="salvarAluno()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Professor -->
+<div class="modal-overlay" id="modalProfessor">
+    <div class="modal">
+        <h3 id="modalProfessorTitle">Novo Professor</h3>
+        <input type="hidden" id="professorId" />
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="professorNome" placeholder="Nome completo" />
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="professorEmail" placeholder="email@exemplo.com" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn-danger"  onclick="fecharModal('modalProfessor')">Cancelar</button>
+            <button class="btn-success" onclick="salvarProfessor()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Disciplina -->
+<div class="modal-overlay" id="modalDisciplina">
+    <div class="modal">
+        <h3 id="modalDisciplinaTitle">Nova Disciplina</h3>
+        <input type="hidden" id="disciplinaId" />
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="disciplinaNome" placeholder="Ex: Matemática" />
+        </div>
+        <div class="form-group">
+            <label>Carga Horária (horas)</label>
+            <input type="number" id="disciplinaCargaHoraria" min="1" max="400" placeholder="Ex: 60" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn-danger"  onclick="fecharModal('modalDisciplina')">Cancelar</button>
+            <button class="btn-success" onclick="salvarDisciplina()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let token = localStorage.getItem('jwtToken');
+
+    function toast(msg, tipo = 'success') {
+        const el = document.createElement('div');
+        el.className = `toast toast-${tipo}`;
+        el.textContent = msg;
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+    }
+
+    function authHeaders() {
+        return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+    }
+
+    function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function showTab(name) {
+        ['alunos', 'professores', 'disciplinas'].forEach((t, i) => {
+            document.getElementById(`tab-${t}`).style.display = t === name ? 'block' : 'none';
+            document.querySelectorAll('.tab')[i].classList.toggle('active', t === name);
+        });
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(el =>
+        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+    );
+
+    // AUTH
+    async function login() {
+        const usuario = document.getElementById('inputUsuario').value;
+        const senha   = document.getElementById('inputSenha').value;
+        try {
+            const res = await fetch('/api/Auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, senha })
+            });
+            if (!res.ok) throw new Error('Usuário ou senha inválidos');
+            const data = await res.json();
+            token = data.token;
+            localStorage.setItem('jwtToken', token);
+            document.getElementById('authSection').innerHTML =
+                `<span class="login-status">Logado como <strong>${usuario}</strong></span>
+                 <button class="btn-white" onclick="logout()">Sair</button>`;
+            toast('Login realizado com sucesso!');
+        } catch (e) { toast(e.message, 'error'); }
+    }
+
+    function logout() { token = null; localStorage.removeItem('jwtToken'); location.reload(); }
+
+    if (token) {
+        document.getElementById('authSection').innerHTML =
+            `<span class="login-status">Sessão ativa</span>
+             <button class="btn-white" onclick="logout()">Sair</button>`;
+    }
+
+    // ALUNOS
+    async function carregarAlunos() {
+        const alunos = await (await fetch('/api/Alunos')).json();
+        const tbody  = document.getElementById('tabelaAlunos');
+        if (!alunos.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Nenhum aluno cadastrado</td></tr>'; return; }
+        tbody.innerHTML = alunos.map(a => `
             <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Autor</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaCorpo">
-        </tbody>
-    </table>
+                <td>${a.id}</td>
+                <td><strong>${a.nome}</strong></td>
+                <td>${a.email}</td>
+                <td>${a.notas?.length ? a.notas.map(n => `<span class="badge">${n.disciplina?.nome ?? '?'}: ${n.valor}</span>`).join('') : '<span style="color:#94a3b8">—</span>'}</td>
+                <td><div class="actions-cell">
+                    <button class="btn-success" onclick="abrirLancarNota(${a.id},'${a.nome}')">Lançar Notas</button>
+                    <button class="btn-info"    onclick="verMedia(${a.id})">Ver Média</button>
+                    <button class="btn-primary" onclick="editarAluno(${a.id},'${a.nome}','${a.email}')">Editar</button>
+                    <button class="btn-danger"  onclick="deletarAluno(${a.id})">Excluir</button>
+                </div></td>
+            </tr>`).join('');
+    }
 
-    <script src="app.js"></script>
+    async function verMedia(id) {
+        const res  = await fetch(`/api/Alunos/${id}/media`);
+        const data = await res.json();
+        toast(`${data.aluno} — Média: ${data.media} — ${data.situacao}`, data.situacao === 'Aprovado' ? 'success' : 'error');
+    }
+
+    function abrirModalAluno() {
+        document.getElementById('modalAlunoTitle').textContent = 'Novo Aluno';
+        document.getElementById('alunoId').value = ''; document.getElementById('alunoNome').value = ''; document.getElementById('alunoEmail').value = '';
+        document.getElementById('modalAluno').classList.add('open');
+    }
+
+    function editarAluno(id, nome, email) {
+        document.getElementById('modalAlunoTitle').textContent = 'Editar Aluno';
+        document.getElementById('alunoId').value = id; document.getElementById('alunoNome').value = nome; document.getElementById('alunoEmail').value = email;
+        document.getElementById('modalAluno').classList.add('open');
+    }
+
+    async function salvarAluno() {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        const id = document.getElementById('alunoId').value;
+        const res = await fetch(id ? `/api/Alunos/${id}` : '/api/Alunos', {
+            method: id ? 'PUT' : 'POST', headers: authHeaders(),
+            body: JSON.stringify({ nome: document.getElementById('alunoNome').value, email: document.getElementById('alunoEmail').value })
+        });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); fecharModal('modalAluno'); carregarAlunos(); } else toast(msg, 'error');
+    }
+
+    async function deletarAluno(id) {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        if (!confirm('Deseja remover este aluno?')) return;
+        const res = await fetch(`/api/Alunos/${id}`, { method: 'DELETE', headers: authHeaders() });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); carregarAlunos(); } else toast(msg, 'error');
+    }
+
+    // LANÇAR NOTAS
+    async function abrirLancarNota(alunoId, alunoNome) {
+        document.getElementById('notaAlunoId').value = alunoId;
+        document.getElementById('modalNotaAlunoNome').textContent = `Aluno: ${alunoNome}`;
+        document.getElementById('notaValor').value = '';
+        const disciplinas = await (await fetch('/api/Disciplinas')).json();
+        document.getElementById('notaDisciplinaId').innerHTML = disciplinas.length
+            ? disciplinas.map(d => `<option value="${d.id}">${d.nome}</option>`).join('')
+            : '<option disabled>Nenhuma disciplina cadastrada</option>';
+        document.getElementById('modalNota').classList.add('open');
+    }
+
+    async function lancarNota() {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        const res = await fetch('/api/Notas', {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                alunoId: parseInt(document.getElementById('notaAlunoId').value),
+                disciplinaId: parseInt(document.getElementById('notaDisciplinaId').value),
+                valor: parseFloat(document.getElementById('notaValor').value)
+            })
+        });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); fecharModal('modalNota'); carregarAlunos(); } else toast(msg, 'error');
+    }
+
+    // PROFESSORES
+    async function carregarProfessores() {
+        const professores = await (await fetch('/api/Professores')).json();
+        const tbody = document.getElementById('tabelaProfessores');
+        if (!professores.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Nenhum professor cadastrado</td></tr>'; return; }
+        tbody.innerHTML = professores.map(p => `
+            <tr>
+                <td>${p.id}</td><td><strong>${p.nome}</strong></td><td>${p.email}</td>
+                <td>${p.turmas?.length ? p.turmas.map(t => `<span class="badge">${t.nome}</span>`).join('') : '<span style="color:#94a3b8">—</span>'}</td>
+                <td><div class="actions-cell">
+                    <button class="btn-primary" onclick="editarProfessor(${p.id},'${p.nome}','${p.email}')">Editar</button>
+                    <button class="btn-danger"  onclick="deletarProfessor(${p.id})">Excluir</button>
+                </div></td>
+            </tr>`).join('');
+    }
+
+    function abrirModalProfessor() {
+        document.getElementById('modalProfessorTitle').textContent = 'Novo Professor';
+        document.getElementById('professorId').value = ''; document.getElementById('professorNome').value = ''; document.getElementById('professorEmail').value = '';
+        document.getElementById('modalProfessor').classList.add('open');
+    }
+
+    function editarProfessor(id, nome, email) {
+        document.getElementById('modalProfessorTitle').textContent = 'Editar Professor';
+        document.getElementById('professorId').value = id; document.getElementById('professorNome').value = nome; document.getElementById('professorEmail').value = email;
+        document.getElementById('modalProfessor').classList.add('open');
+    }
+
+    async function salvarProfessor() {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        const id = document.getElementById('professorId').value;
+        const res = await fetch(id ? `/api/Professores/${id}` : '/api/Professores', {
+            method: id ? 'PUT' : 'POST', headers: authHeaders(),
+            body: JSON.stringify({ nome: document.getElementById('professorNome').value, email: document.getElementById('professorEmail').value })
+        });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); fecharModal('modalProfessor'); carregarProfessores(); } else toast(msg, 'error');
+    }
+
+    async function deletarProfessor(id) {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        if (!confirm('Deseja remover este professor?')) return;
+        const res = await fetch(`/api/Professores/${id}`, { method: 'DELETE', headers: authHeaders() });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); carregarProfessores(); } else toast(msg, 'error');
+    }
+
+    // DISCIPLINAS
+    async function carregarDisciplinas() {
+        const disciplinas = await (await fetch('/api/Disciplinas')).json();
+        const tbody = document.getElementById('tabelaDisciplinas');
+        if (!disciplinas.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Nenhuma disciplina cadastrada</td></tr>'; return; }
+        tbody.innerHTML = disciplinas.map(d => `
+            <tr>
+                <td>${d.id}</td><td><strong>${d.nome}</strong></td><td>${d.cargaHoraria}h</td>
+                <td><div class="actions-cell">
+                    <button class="btn-primary" onclick="editarDisciplina(${d.id},'${d.nome}',${d.cargaHoraria})">Editar</button>
+                    <button class="btn-danger"  onclick="deletarDisciplina(${d.id})">Excluir</button>
+                </div></td>
+            </tr>`).join('');
+    }
+
+    function abrirModalDisciplina() {
+        document.getElementById('modalDisciplinaTitle').textContent = 'Nova Disciplina';
+        document.getElementById('disciplinaId').value = ''; document.getElementById('disciplinaNome').value = ''; document.getElementById('disciplinaCargaHoraria').value = '';
+        document.getElementById('modalDisciplina').classList.add('open');
+    }
+
+    function editarDisciplina(id, nome, cargaHoraria) {
+        document.getElementById('modalDisciplinaTitle').textContent = 'Editar Disciplina';
+        document.getElementById('disciplinaId').value = id; document.getElementById('disciplinaNome').value = nome; document.getElementById('disciplinaCargaHoraria').value = cargaHoraria;
+        document.getElementById('modalDisciplina').classList.add('open');
+    }
+
+    async function salvarDisciplina() {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        const id = document.getElementById('disciplinaId').value;
+        const res = await fetch(id ? `/api/Disciplinas/${id}` : '/api/Disciplinas', {
+            method: id ? 'PUT' : 'POST', headers: authHeaders(),
+            body: JSON.stringify({ nome: document.getElementById('disciplinaNome').value, cargaHoraria: parseInt(document.getElementById('disciplinaCargaHoraria').value) })
+        });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); fecharModal('modalDisciplina'); carregarDisciplinas(); } else toast(msg, 'error');
+    }
+
+    async function deletarDisciplina(id) {
+        if (!token) { toast('Faça login para esta ação', 'error'); return; }
+        if (!confirm('Deseja remover esta disciplina?')) return;
+        const res = await fetch(`/api/Disciplinas/${id}`, { method: 'DELETE', headers: authHeaders() });
+        const msg = await res.json();
+        if (res.ok) { toast(msg); carregarDisciplinas(); } else toast(msg, 'error');
+    }
+
+    carregarAlunos();
+    carregarProfessores();
+    carregarDisciplinas();
+</script>
 </body>
 </html>
